@@ -1,0 +1,135 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<!-- 
+	In this fragment you need to replace:
+  ##CompanyID## F12
+  ##AppName## Payments
+  
+Application Server Group = F12.Payments.ApplicationServer.Class.Group
+WebServer Group = F12.Payments.Weberver.Class.Group
+	
+	-->
+	
+	
+		<TypeDefinitions>
+			<EntityTypes>
+				<ClassTypes>
+					<ClassType ID="F12.Payments.DA" Base="System!System.Service" Accessibility="Public" Abstract="false" Hosted="false" Singleton="true" />
+				</ClassTypes>
+				<RelationshipTypes>
+
+					<!-- In this section, provide the Source (i.e. Parent) and Target (i.e. Child)
+             for this relationship. Also, review and update the Base attribute. 
+             More information can be found in the Management Pack Development Kit: 
+             http://msdn.microsoft.com/en-us/library/ee533533.aspx -->
+					<RelationshipType ID="F12.Payments.DA.contains.Group.ApplicationServer" Base="System!System.Containment" Abstract="false" Accessibility="Internal">
+						<Source ID="Source" Type="F12.Payments.DA"/>
+						<Target ID="Target" Type="F12.Payments.ApplicationServer.Class.Group"/>
+					</RelationshipType>
+					<RelationshipType ID="F12.Payments.DA.contains.Group.WebServer" Base="System!System.Containment" Abstract="false" Accessibility="Internal">
+						<Source ID="Source" Type="F12.Payments.DA"/>
+						<Target ID="Target" Type="F12.Payments.WebServer.Class.Group"/>
+					</RelationshipType>
+
+				</RelationshipTypes>
+			</EntityTypes>
+		</TypeDefinitions>
+
+	<Monitoring>
+		<Discoveries>
+			<Discovery ID="F12.Payments.DA.Contains.Group.ApplicationServer.Discovery" Target="F12.Payments.DA" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+				<Category>Discovery</Category>
+				<DiscoveryTypes>
+					<DiscoveryRelationship TypeID="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" />
+				</DiscoveryTypes>
+				<DataSource ID="GroupPopulationDataSource" TypeID="SC!Microsoft.SystemCenter.GroupPopulator">
+					<RuleId>$MPElement$</RuleId>
+					<GroupInstanceId>$MPElement[Name="F12.Payments.DA"]$</GroupInstanceId>
+					<MembershipRules>
+						<MembershipRule>
+							<MonitoringClass>$MPElement[Name="F12.Payments.ApplicationServer.Class.Group"]$</MonitoringClass>
+							<RelationshipClass>$MPElement[Name="F12.Payments.DA.contains.Group.ApplicationServer"]$</RelationshipClass>
+						</MembershipRule>
+					</MembershipRules>
+				</DataSource>
+			</Discovery>
+			<Discovery ID="F12.Payments.DA.Contains.Group.WebServer.Discovery" Target="F12.Payments.DA" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+				<Category>Discovery</Category>
+				<DiscoveryTypes>
+					<DiscoveryRelationship TypeID="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" />
+				</DiscoveryTypes>
+				<DataSource ID="GroupPopulationDataSource" TypeID="SC!Microsoft.SystemCenter.GroupPopulator">
+					<RuleId>$MPElement$</RuleId>
+					<GroupInstanceId>$MPElement[Name="F12.Payments.DA"]$</GroupInstanceId>
+					<MembershipRules>
+						<MembershipRule>
+							<MonitoringClass>$MPElement[Name="F12.Payments.WebServer.Class.Group"]$</MonitoringClass>
+							<RelationshipClass>$MPElement[Name="F12.Payments.DA.contains.Group.WebServer"]$</RelationshipClass>
+						</MembershipRule>
+					</MembershipRules>
+				</DataSource>
+			</Discovery>
+		</Discoveries>
+		<Monitors>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.AvailabilityState">
+			<Category>AvailabilityHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.ConfigurationState">
+			<Category>ConfigurationHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.PerformanceState">
+			<Category>PerformanceHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.SecurityState">
+			<Category>SecurityHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
+		</Monitors>
+	</Monitoring>
+	
+	
+		<LanguagePacks>
+			<LanguagePack ID="ENU" IsDefault="true">
+				<DisplayStrings>
+
+					<!-- This is the string users of the Operations Console and Web Console will see. 
+             Descriptions are also helpful when the user is doing a search in the Console. -->
+					<DisplayString ElementID="F12.Payments.DA">
+						<Name>F12 Payments Application</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.contains.Group.ApplicationServer">
+						<Name>F12 Payments DA contains Application Server Component Group</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.contains.Group.WebServer">
+						<Name>F12 Payments DA contains WebServer Server Component Group</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.ApplicationServer.Discovery">
+						<Name>Group Populator - Payments DA contains Application Server Group</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.WebServer.Discovery">
+						<Name>Group Populator - Payments DA contains Web Server Group</Name>
+						<Description></Description>
+					</DisplayString>
+					
+
+				</DisplayStrings>
+			</LanguagePack>
+		</LanguagePacks>
+
+
+</ManagementPackFragment>

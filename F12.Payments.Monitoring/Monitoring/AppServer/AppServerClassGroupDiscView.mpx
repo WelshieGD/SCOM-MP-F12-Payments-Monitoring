@@ -234,6 +234,7 @@ Values 1, 2, and 3 are used only when the PathType is set to 1.
 				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Group.Security.Dependency.Monitor">
 					<Name>F12 Payments ApplicationServer Instances Group Security Dependency Monitor</Name>
 				</DisplayString>
+
 			</DisplayStrings>
 			<KnowledgeArticles></KnowledgeArticles>
 		</LanguagePack>
