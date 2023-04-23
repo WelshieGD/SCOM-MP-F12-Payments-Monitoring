@@ -1,0 +1,241 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- 
+%%
+Description:
+  A CLASS and DISCOVERY based on existence of a registry KEY with an example class property added
+  CompanyID - is a short abbreviation for your company with NO SPACES OR SPECIAL CHARACTERS ALLOWED
+  AppName - is a short name for your app with NO SPACES OR SPECIAL CHARACTERS ALLOWED
+  RegKeyPath - needs to be in the format of "SOFTWARE\Microsoft\CCM" or "SYSTEM\CurrentControlSet\Services\CcmExec" as HKLM is assumed
+  RegValuePath - this is an example for a class property using a registry value such as "SOFTWARE\Microsoft\Internet Explorer\Version"
+  UniqueID - We need a Unique ID to reuse the fragment within the same MP.  Use a shortened descriptive name with NO SPACES OR SPECIAL CHARACTERS ALLOWED
+	
+Version: 1.2
+LastModified: 07-Jun-2019
+
+Version: GD2.0
+
+%%
+
+In this fragment you need to replace:
+  ##CompanyID## F12
+  ##AppName## Payments
+  ##RegKeyPath## SOFTWARE\SCOMDiscoveryData\Payments SOFTWARE\SCOMDiscoveryData\Payments
+  ##UniqueID## ApplicationServer
+  ##ClassID## F12.Payments.ApplicationServer.Class
+
+This fragment depends on references:
+  RequiredReference: Alias="System", ID="System.Library"
+  RequiredReference: Alias="Windows", ID="Microsoft.Windows.Library"
+ RequiredReference: Alias="MSIL", ID="Microsoft.SystemCenter.InstanceGroup.Library"
+	
+@@Author=Kevin Holman@@
+@@UpdatedBy=Graham Davies@@
+-->
+	<TypeDefinitions>
+		<EntityTypes>
+			<ClassTypes>
+				<ClassType ID="F12.Payments.ApplicationServer.Class" Base="Windows!Microsoft.Windows.LocalApplication" Accessibility="Public" Abstract="false" Hosted="true" Singleton="false">
+					<Property ID="Version" Type="string" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" />
+				</ClassType>
+				<!-- We choose Microsoft.Windows.LocalApplication as our generic base class -->
+				<!-- This specific fragment example has a class property of "Version" just as an example. You can change as needed or add new ones -->
+				<ClassType ID="F12.Payments.ApplicationServer.Class.Group" Accessibility="Public" Abstract="false" Base="MSIL!Microsoft.SystemCenter.InstanceGroup" Hosted="false" Singleton="true" Extension="false" />
+			</ClassTypes>
+		</EntityTypes>
+	</TypeDefinitions>
+	<Monitoring>
+		<Discoveries>
+			<!-- 
+PathType - Integer
+  Specifies whether the path is a key or a value.
+  • 0—Specifies that the path is to a key, for which the existence of the key should be checked.
+  • 1—Specifies that the path is to a value that should be retrieved.
+
+AttributeType -   Integer
+  The data type of the value to return:
+  • 0—Boolean
+  • 1—String
+  • 2—Integer
+  • 3—Float
+Values 1, 2, and 3 are used only when the PathType is set to 1.
+-->
+			<Discovery ID="F12.Payments.ApplicationServer.Class.Discovery" Target="Windows!Microsoft.Windows.Server.OperatingSystem" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+				<!-- We choose Microsoft.Windows.Server.OperatingSystem as the preferred target class to ensure this will run on all Windows Servers, but wont create duplicates on clusters -->
+				<Category>Discovery</Category>
+				<DiscoveryTypes>
+					<DiscoveryClass TypeID="F12.Payments.ApplicationServer.Class">
+					</DiscoveryClass>
+				</DiscoveryTypes>
+				<DataSource ID="DS" TypeID="Windows!Microsoft.Windows.FilteredRegistryDiscoveryProvider">
+					<ComputerName>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</ComputerName>
+					<!-- You may need to add or remove Host references in this line depending on your target -->
+					<RegistryAttributeDefinitions>
+						<RegistryAttributeDefinition>
+							<AttributeName>ApplicationServerRegKeyExists</AttributeName>
+							<Path>SOFTWARE\SCOMDiscoveryData\Payments</Path>
+							<PathType>0</PathType>
+							<!-- 0=regKey 1=regValue -->
+							<AttributeType>0</AttributeType>
+							<!-- 0=CheckIfExists (Boolean) 1=treat data as (String) 2=treat data as (Integer) -->
+						</RegistryAttributeDefinition>
+					</RegistryAttributeDefinitions>
+					<Frequency>86400</Frequency>
+					<!-- seconds -->
+					<ClassId>$MPElement[Name="F12.Payments.ApplicationServer.Class"]$</ClassId>
+					<InstanceSettings>
+						<Settings>
+							<Setting>
+								<Name>$MPElement[Name="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Name>
+								<Value>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+							</Setting>
+							<Setting>
+								<Name>$MPElement[Name="System!System.Entity"]/DisplayName$</Name>
+								<Value>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+							</Setting>
+						</Settings>
+					</InstanceSettings>
+					<Expression>
+						<SimpleExpression>
+							<ValueExpression>
+								<XPathQuery Type="Boolean">Values/ApplicationServerRegKeyExists</XPathQuery>
+								<!-- Common options for XPathQuery Type are "Boolean" "String" "Integer" "Double" -->
+							</ValueExpression>
+							<Operator>Equal</Operator>
+							<!-- Common options for SimpleExpression Operator are "Equal" "NotEqual" "Greater" "Less" "GreaterEqual" "LessEqual" "Like" "NotLike" -->
+							<ValueExpression>
+								<Value Type="Boolean">true</Value>
+								<!-- Common options for XPathQuery Type are "Boolean" "String" "Integer" "Double" -->
+							</ValueExpression>
+						</SimpleExpression>
+					</Expression>
+				</DataSource>
+			</Discovery>
+			<Discovery ID="F12.Payments.ApplicationServer.Class.Group.Discovery" Enabled="true" Target="F12.Payments.ApplicationServer.Class.Group" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+				<Category>Discovery</Category>
+				<DiscoveryTypes>
+					<DiscoveryRelationship TypeID="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" />
+				</DiscoveryTypes>
+				<DataSource ID="GroupPopulationDataSource" TypeID="SC!Microsoft.SystemCenter.GroupPopulator">
+					<RuleId>$MPElement$</RuleId>
+					<GroupInstanceId>$MPElement[Name="F12.Payments.ApplicationServer.Class.Group"]$</GroupInstanceId>
+					<MembershipRules>
+						<MembershipRule>
+							<MonitoringClass>$MPElement[Name="F12.Payments.ApplicationServer.Class"]$</MonitoringClass>
+							<RelationshipClass>$MPElement[Name="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
+						</MembershipRule>
+					</MembershipRules>
+				</DataSource>
+			</Discovery>
+		</Discoveries>
+		<Monitors>
+			<DependencyMonitor ID="F12.Payments.ApplicationServer.Class.Group.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationServer.Class.Group" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.AvailabilityState">
+				<Category>AvailabilityHealth</Category>
+				<Algorithm>WorstOf</Algorithm>
+				<MemberUnAvailable>Error</MemberUnAvailable>
+			</DependencyMonitor>
+			<DependencyMonitor ID="F12.Payments.ApplicationServer.Class.Group.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationServer.Class.Group" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.ConfigurationState">
+				<Category>ConfigurationHealth</Category>
+				<Algorithm>WorstOf</Algorithm>
+				<MemberUnAvailable>Error</MemberUnAvailable>
+			</DependencyMonitor>
+			<DependencyMonitor ID="F12.Payments.ApplicationServer.Class.Group.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationServer.Class.Group" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.PerformanceState">
+				<Category>PerformanceHealth</Category>
+				<Algorithm>WorstOf</Algorithm>
+				<MemberUnAvailable>Error</MemberUnAvailable>
+			</DependencyMonitor>
+			<DependencyMonitor ID="F12.Payments.ApplicationServer.Class.Group.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationServer.Class.Group" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.SecurityState">
+				<Category>SecurityHealth</Category>
+				<Algorithm>WorstOf</Algorithm>
+				<MemberUnAvailable>Error</MemberUnAvailable>
+			</DependencyMonitor>
+		</Monitors>
+	</Monitoring>
+	<Presentation>
+		<Views>
+			<View ID="F12.Payments.ApplicationServer.Alert.View" Accessibility="Internal" Enabled="true" Target="F12.Payments.ApplicationServer.Class" TypeID="SC!Microsoft.SystemCenter.AlertViewType" Visible="true">
+				<Category>Custom</Category>
+				<Criteria>
+					<ResolutionState>
+						<StateRange Operator="NotEquals">255</StateRange>
+					</ResolutionState>
+				</Criteria>
+			</View>
+			<View ID="F12.Payments.ApplicationServer.State.View" Accessibility="Internal" Enabled="true" Target="F12.Payments.ApplicationServer.Class" TypeID="SC!Microsoft.SystemCenter.StateViewType" Visible="true">
+				<Category>Custom</Category>
+				<Criteria />
+				<Presentation>
+					<ColumnInfo Index="0" SortIndex="0" Width="100" Grouped="false" Sorted="true" IsSortable="true" Visible="true" SortOrder="Descending">
+						<Name>State</Name>
+						<Id>F12.Payments.ApplicationServer.Class</Id>
+					</ColumnInfo>
+					<ColumnInfo Index="1" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+						<Name>In Maintenance Mode</Name>
+						<Id>InMaintenanceMode</Id>
+					</ColumnInfo>
+					<ColumnInfo Index="2" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+						<Name>Name</Name>
+						<Id>Name</Id>
+					</ColumnInfo>
+					<ColumnInfo Index="4" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+						<Name>Path</Name>
+						<Id>Path</Id>
+					</ColumnInfo>
+					<ColumnInfo Index="5" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+						<Name>Display Name</Name>
+						<Id>System.Entity/DisplayName</Id>
+					</ColumnInfo>
+				</Presentation>
+			</View>
+		</Views>
+		<Folders>
+			<Folder ID="F12.Payments.Root.Folder" Accessibility="Public" ParentFolder="SC!Microsoft.SystemCenter.Monitoring.ViewFolder.Root" />
+		</Folders>
+		<FolderItems>
+			<FolderItem ElementID="F12.Payments.ApplicationServer.Alert.View" ID="F12.Payments.ApplicationServer.Alert.View.FolderItem" Folder="F12.Payments.Root.Folder" />
+			<FolderItem ElementID="F12.Payments.ApplicationServer.State.View" ID="F12.Payments.ApplicationServer.State.View.FolderItem" Folder="F12.Payments.Root.Folder" />
+		</FolderItems>
+	</Presentation>
+	<LanguagePacks>
+		<LanguagePack ID="ENU" IsDefault="true">
+			<DisplayStrings>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class">
+					<Name>F12 Payments ApplicationServer Class</Name>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Discovery">
+					<Name>F12 Payments ApplicationServer Class Discovery</Name>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.Root.Folder">
+					<Name>F12 - Payments</Name>
+					<Description />
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Alert.View">
+					<Name>Active Alerts</Name>
+					<Description />
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.State.View">
+					<Name>Application Server State</Name>
+					<Description />
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Group">
+					<Name>F12 Payments ApplicationServer Instances Group</Name>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Group.Discovery">
+					<Name>F12 Payments ApplicationServer Instances Group Discovery</Name>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Group.Availability.Dependency.Monitor">
+					<Name>F12 Payments ApplicationServer Instances Group Availability Dependency Monitor</Name>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Group.Configuration.Dependency.Monitor">
+					<Name>F12 Payments ApplicationServer Instances Group Configuration Dependency Monitor</Name>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Group.Performance.Dependency.Monitor">
+					<Name>F12 Payments ApplicationServer Instances Group Performance Dependency Monitor</Name>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.ApplicationServer.Class.Group.Security.Dependency.Monitor">
+					<Name>F12 Payments ApplicationServer Instances Group Security Dependency Monitor</Name>
+				</DisplayString>
+			</DisplayStrings>
+			<KnowledgeArticles></KnowledgeArticles>
+		</LanguagePack>
+	</LanguagePacks>
+</ManagementPackFragment>

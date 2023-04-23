@@ -1,0 +1,388 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<!-- 
+%%
+Description:
+  A CLASS and DISCOVERY based on existence of a registry KEY with an example class property added
+  CompanyID - is a short abbreviation for your company with NO SPACES OR SPECIAL CHARACTERS ALLOWED
+  AppName - is a short name for your app with NO SPACES OR SPECIAL CHARACTERS ALLOWED
+	
+Version: 1.0
+LastModified: 23rd April 2023
+
+%%
+
+In this fragment you need to replace:
+  ##CompanyID## F12
+  ##AppName## Payments
+  ##WebSiteName## Default Web Site
+  ##ServerName## SCOMMS
+  ##Alias##  MWIC
+
+RequiredManagementPacks:
+- "Microsoft.Windows.InternetInformationServices.2016.mp"
+- "Microsoft.Windows.InternetInformationServices.CommonLibrary.mp"
+
+This fragment depends on references:
+  RequiredReference: Alias="System", ID="System.Library"
+  RequiredReference: Alias="Windows", ID="Microsoft.Windows.Library"
+  RequiredReference: Alias="MSIL", ID="Microsoft.SystemCenter.InstanceGroup.Library"
+  RequiredReference: Alias="MWIC", ID="Microsoft.Windows.InternetInformationServices.CommonLibrary"
+
+
+	
+@@Author=Graham Davies@@
+-->
+	<TypeDefinitions>
+		<EntityTypes>
+			<ClassTypes>
+				<ClassType ID="F12.Payments.WebServer.Class.Group" Accessibility="Public" Abstract="false" Base="MSIL!Microsoft.SystemCenter.InstanceGroup" Hosted="false" Singleton="true" Extension="false" />
+			</ClassTypes>
+
+
+			<RelationshipTypes>
+				<RelationshipType ID="F12.Payments.Class.WebServerGroup.Contains.Websites" Base="System!System.Containment" Abstract="false" Accessibility="Internal">
+					<Source ID="Source" Type="F12.Payments.WebServer.Class.Group"/>
+					<Target ID="Target" Type="MWIC!Microsoft.Windows.InternetInformationServices.WebSite"/>
+				</RelationshipType>
+			</RelationshipTypes>
+			
+			
+		</EntityTypes>
+	</TypeDefinitions>
+	<Monitoring>
+		<Discoveries>
+			<Discovery ID="F12.Payments.WebServer.Class.Group.Discovery" Enabled="true" Target="F12.Payments.WebServer.Class.Group" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+				<Category>Discovery</Category>
+				<DiscoveryTypes>
+					<DiscoveryRelationship TypeID="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" />
+				</DiscoveryTypes>
+				<DataSource ID="GroupPopulationDataSource" TypeID="SC!Microsoft.SystemCenter.GroupPopulator">
+					<RuleId>$MPElement$</RuleId>
+					<GroupInstanceId>$MPElement[Name="F12.Payments.WebServer.Class.Group"]$</GroupInstanceId>
+					<MembershipRules>
+						<MembershipRule>
+							<!-- Common Library class is abstract - this is concrete - the class we need to add to the group -->
+							<MonitoringClass>$MPElement[Name="MWI2!Microsoft.Windows.InternetInformationServices.10.0.WebSite"]$</MonitoringClass>
+							<RelationshipClass>$MPElement[Name="F12.Payments.Class.WebServerGroup.Contains.Websites"]$</RelationshipClass>
+							<Expression>
+								<And>
+									<Expression>
+										<SimpleExpression>
+											<ValueExpression>
+												<!--Description is a property of the abstract parent class so need to use property of that -->
+												<Property>$MPElement[Name="MWIC!Microsoft.Windows.InternetInformationServices.WebSite"]/Description$</Property>
+											</ValueExpression>
+											<Operator>Equal</Operator>
+											<ValueExpression>
+												<Value>Default Web Site</Value>
+											</ValueExpression>
+										</SimpleExpression>
+									</Expression>
+									<Expression>
+										<SimpleExpression>
+											<ValueExpression>
+												<Property>$MPElement[Name="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Property>
+											</ValueExpression>
+											<Operator>Like</Operator>
+											<ValueExpression>
+												<Value>SCOMMS%</Value>
+											</ValueExpression>
+										</SimpleExpression>
+									</Expression>
+								</And>
+							</Expression>
+						</MembershipRule>
+					</MembershipRules>
+				</DataSource>
+			</Discovery>
+		</Discoveries>
+	    <Monitors>
+      <DependencyMonitor ID="F12.Payments.WebServer.Class.Group.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.WebServer.Class.Group" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.AvailabilityState">
+        <Category>AvailabilityHealth</Category>
+        <Algorithm>WorstOf</Algorithm>
+        <MemberUnAvailable>Error</MemberUnAvailable>
+      </DependencyMonitor>
+      <DependencyMonitor ID="F12.Payments.WebServer.Class.Group.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.WebServer.Class.Group" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.ConfigurationState">
+        <Category>ConfigurationHealth</Category>
+        <Algorithm>WorstOf</Algorithm>
+        <MemberUnAvailable>Error</MemberUnAvailable>
+      </DependencyMonitor>
+      <DependencyMonitor ID="F12.Payments.WebServer.Class.Group.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.WebServer.Class.Group" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.PerformanceState">
+        <Category>PerformanceHealth</Category>
+        <Algorithm>WorstOf</Algorithm>
+        <MemberUnAvailable>Error</MemberUnAvailable>
+      </DependencyMonitor>
+      <DependencyMonitor ID="F12.Payments.WebServer.Class.Group.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.WebServer.Class.Group" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.SecurityState">
+        <Category>SecurityHealth</Category>
+        <Algorithm>WorstOf</Algorithm>
+        <MemberUnAvailable>Error</MemberUnAvailable>
+      </DependencyMonitor>
+    </Monitors>
+	</Monitoring>
+	
+		 <Presentation>
+    <Views>
+	<!-- Although a group is specified, only instances of the target class in the group will be displayed (or instances hosted by target) -->
+	<!-- If entity is specified as the criteria then all group members are displayed as all instances derive from entity-->
+      <View ID="F12.Payments.WebServer.Alert.View" Accessibility="Internal" Enabled="true" Target="MWI2!Microsoft.Windows.InternetInformationServices.10.0.WebSite" TypeID="SC!Microsoft.SystemCenter.AlertViewType" Visible="true">
+        <Category>Custom</Category>
+        <Criteria>
+          <ResolutionState>
+            <StateRange Operator="NotEquals">255</StateRange>
+          </ResolutionState>
+        </Criteria>
+	  <Presentation>
+		  <ColumnInfo Index="0" SortIndex="0" Width="22" Grouped="true" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Severity</Name>
+            <Id>Severity</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="1" SortIndex="-1" Width="54" Grouped="false" Sorted="false" IsSortable="false" Visible="true" SortOrder="Ascending">
+            <Name>Icon</Name>
+            <Id>Icon</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="2" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Path</Name>
+            <Id>MonitoringObjectPath</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="3" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Source</Name>
+            <Id>MonitoringObjectDisplayName</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="4" SortIndex="-1" Width="22" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Maintenance Mode</Name>
+            <Id>MonitoringObjectInMaintenanceMode</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="5" SortIndex="-1" Width="250" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Name</Name>
+            <Id>Name</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="6" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Resolution State</Name>
+            <Id>ResolutionState</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="7" SortIndex="-1" Width="150" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Created</Name>
+            <Id>TimeRaised</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="8" SortIndex="1" Width="100" Grouped="false" Sorted="true" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Age</Name>
+            <Id>Age</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="9" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Type</Name>
+            <Id>Category</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="10" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Owner</Name>
+            <Id>Owner</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="11" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Priority</Name>
+            <Id>Priority</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="12" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Latency</Name>
+            <Id>Latency</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="13" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Description</Name>
+            <Id>Description</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="14" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Connector</Name>
+            <Id>ConnectorId</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="15" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Forwarding Status</Name>
+            <Id>ConnectorStatus</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="16" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Class</Name>
+            <Id>Class</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="17" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Time in State</Name>
+            <Id>TimeInState</Id>
+          </ColumnInfo>
+		  	  </Presentation>
+		  <Target>$MPElement[Name="F12.Payments.WebServer.Class.Group"]$</Target>
+      </View>
+	
+			 <View ID="F12.Payments.WebServer.State.View" Accessibility="Internal" Enabled="true" Target="MWI2!Microsoft.Windows.InternetInformationServices.10.0.WebSite" TypeID="SC!Microsoft.SystemCenter.StateViewType" Visible="true">
+        <Category>Custom</Category>
+                <Criteria />
+
+	  <Presentation>
+          <ColumnInfo Index="0" SortIndex="0" Width="100" Grouped="false" Sorted="true" IsSortable="true" Visible="true" SortOrder="Descending">
+            <Name>State</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite-*-20d3db1e-985d-8232-864f-96d636eaf908-*-Health</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="1" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Maintenance Mode</Name>
+            <Id>InMaintenanceMode</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="2" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Name</Name>
+            <Id>Name</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="3" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="true" SortOrder="Ascending">
+            <Name>Path</Name>
+            <Id>Path</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="4" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Display Name</Name>
+            <Id>System.Entity/DisplayName</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="5" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Key</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/SiteID</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="6" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Description</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/Description</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="7" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Server Bindings</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/ServerBindings</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="8" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Secure Bindings</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/SecureBindings</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="9" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Folder path</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/Path</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="10" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Log File Directory</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/LogFileDirectory</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="11" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>LogfileType</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/LogFileType</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="12" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="false" Visible="false" SortOrder="Ascending">
+            <Name>BITS</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/BITS</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="13" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Log File Pattern</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/LogFilePattern</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="14" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="false" Visible="false" SortOrder="Ascending">
+            <Name>Logging Enabled</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/LoggingEnabled</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="15" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Anonymous Username</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/AnonymousUsername</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="16" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="false" Visible="false" SortOrder="Ascending">
+            <Name>Cache ISAPI</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/CacheISAPI</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="17" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="false" Visible="false" SortOrder="Ascending">
+            <Name>Allow Keep Alive</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/AllowKeepAlive</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="18" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>URL</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/URL</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="19" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Perf Counter Instance Name</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.WebSite/PerfCounterInstance</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="20" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Application Pool Name</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/ApplicationPoolName</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="21" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="false" Visible="false" SortOrder="Ascending">
+            <Name>Failed Request Tracing Enabled</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/FailedRequestTracingEnabled</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="22" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Failed Request Tracing Directory</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/FailedRequestTracingDirectory</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="23" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="false" Visible="false" SortOrder="Ascending">
+            <Name>Start Automatically</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/StartAutomatically</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="24" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Connection Time-out (seconds)</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/ConnectionTimeout</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="25" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Maximum Concurrent Connections</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/MaxConnections</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="26" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>Maximum Bandwidth (Bytes/second)</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/MaximumBandwidth</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="27" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>ID</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.WebSite/ID</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="28" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>IIS 10 Application Pool</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.ApplicationPool</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="29" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>IIS 10 ASP.NET Web Service Endpoint</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.AspNetWebServiceEndpoint</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="30" SortIndex="-1" Width="100" Grouped="false" Sorted="false" IsSortable="true" Visible="false" SortOrder="Ascending">
+            <Name>IIS 10 ASP.NET Application Endpoint</Name>
+            <Id>Microsoft.Windows.InternetInformationServices.10.0.AspNetWebApplicationEndpoint</Id>
+          </ColumnInfo>
+		  	  </Presentation>
+		  <Target>$MPElement[Name="F12.Payments.WebServer.Class.Group"]$</Target>
+      </View>
+			 
+	</Views>
+		 		<Folders/> 
+		<FolderItems>
+			<FolderItem ElementID="F12.Payments.WebServer.Alert.View" ID="F12.Payments.ApplicationServer.Alert.View.FolderItem" Folder="F12.Payments.Root.Folder" />
+					<FolderItem ElementID="F12.Payments.WebServer.State.View" ID="F12.Payments.ApplicationServer.State.View.FolderItem" Folder="F12.Payments.Root.Folder" />
+		</FolderItems>
+	</Presentation>
+			
+				
+	<LanguagePacks>
+		<LanguagePack ID="ENU" IsDefault="true">
+			<DisplayStrings>
+				<DisplayString ElementID="F12.Payments.WebServer.Class.Group">
+					<Name>F12 Payments Web Sites Group</Name>
+					<Description>Group of Web Sites that make up the Payments application.</Description>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.WebServer.Class.Group.Discovery">
+					<Name>Group Populator - F12 Payments Web Sites Group</Name>
+					<Description></Description>
+				</DisplayString>
+				<DisplayString ElementID="F12.Payments.WebServer.Alert.View">
+					<Name>Active Alerts - Web Server</Name>
+					<Description />
+				</DisplayString>
+								<DisplayString ElementID="F12.Payments.WebServer.State.View">
+					<Name>Web Server State</Name>
+					<Description />
+				</DisplayString>
+							        <DisplayString ElementID="F12.Payments.WebServer.Class.Group.Availability.Dependency.Monitor">
+          <Name>F12 Payments WebServer Group Availability Dependency Monitor</Name>
+        </DisplayString>
+        <DisplayString ElementID="F12.Payments.WebServer.Class.Group.Configuration.Dependency.Monitor">
+          <Name>F12 Payments WebServer Group Configuration Dependency Monitor</Name>
+        </DisplayString>
+        <DisplayString ElementID="F12.Payments.WebServer.Class.Group.Performance.Dependency.Monitor">
+          <Name>F12 Payments WebServer Group Performance Dependency Monitor</Name>
+        </DisplayString>
+        <DisplayString ElementID="F12.Payments.WebServer.Class.Group.Security.Dependency.Monitor">
+          <Name>F12 Payments WebServer Group Security Dependency Monitor</Name>
+        </DisplayString>
+			</DisplayStrings>
+		</LanguagePack>
+	</LanguagePacks>
+</ManagementPackFragment>
