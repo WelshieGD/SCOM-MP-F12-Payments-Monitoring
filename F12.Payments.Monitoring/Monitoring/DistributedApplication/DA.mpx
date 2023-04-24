@@ -14,7 +14,9 @@ WebServer Group = F12.Payments.Weberver.Class.Group
 		<TypeDefinitions>
 			<EntityTypes>
 				<ClassTypes>
-					<ClassType ID="F12.Payments.DA" Base="System!System.Service" Accessibility="Public" Abstract="false" Hosted="false" Singleton="true" />
+					<!-- System.Service requires relationships. System.Group doesn't. Sadly properties of System.Service are read only (From SCSM) -->
+					<ClassType ID="F12.Payments.DA" Base="System!System.Service" Accessibility="Public" Abstract="false" Hosted="false" Singleton="true">
+					</ClassType>
 				</ClassTypes>
 				<RelationshipTypes>
 
@@ -71,12 +73,32 @@ WebServer Group = F12.Payments.Weberver.Class.Group
 			</Discovery>
 		</Discoveries>
 		<Monitors>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.AvailabilityState">
+			<Category>AvailabilityHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.ConfigurationState">
+			<Category>ConfigurationHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.PerformanceState">
+			<Category>PerformanceHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.SecurityState">
+			<Category>SecurityHealth</Category>
+			<Algorithm>WorstOf</Algorithm>
+			<MemberUnAvailable>Error</MemberUnAvailable>
+		</DependencyMonitor>
 		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.AvailabilityState">
 			<Category>AvailabilityHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.ConfigurationState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.ConfigurationState">
 			<Category>ConfigurationHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
@@ -125,8 +147,47 @@ WebServer Group = F12.Payments.Weberver.Class.Group
 						<Name>Group Populator - Payments DA contains Web Server Group</Name>
 						<Description></Description>
 					</DisplayString>
-					
 
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.WebServer.Availability.Dependency.Monitor">
+						<Name>DA Contains Web Server Availability Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.WebServer.Configuration.Dependency.Monitor">
+						<Name>DA Contains Web Server Configuration Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.WebServer.Performance.Dependency.Monitor">
+						<Name>DA Contains Web Server Performance Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.WebServer.Security.Dependency.Monitor">
+						<Name>DA Contains Web Server Security Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.ApplicationServer.Availability.Dependency.Monitor">
+						<Name>DA Contains Application Server Availability Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.ApplicationServer.Configuration.Dependency.Monitor">
+						<Name>DA Contains Application Server Configuration Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.ApplicationServer.Performance.Dependency.Monitor">
+						<Name>DA Contains Application Server Performance Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+
+					<DisplayString ElementID="F12.Payments.DA.Contains.Group.ApplicationServer.Security.Dependency.Monitor">
+						<Name>DA Contains Application Server Security Rollup Dependency Monitor</Name>
+						<Description></Description>
+					</DisplayString>
+					
 				</DisplayStrings>
 			</LanguagePack>
 		</LanguagePacks>

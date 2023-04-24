@@ -37,17 +37,7 @@ This fragment depends on references:
 		<EntityTypes>
 			<ClassTypes>
 				<ClassType ID="F12.Payments.WebServer.Class.Group" Accessibility="Public" Abstract="false" Base="MSIL!Microsoft.SystemCenter.InstanceGroup" Hosted="false" Singleton="true" Extension="false" />
-			</ClassTypes>
-
-
-			<RelationshipTypes>
-				<RelationshipType ID="F12.Payments.Class.WebServerGroup.Contains.Websites" Base="System!System.Containment" Abstract="false" Accessibility="Internal">
-					<Source ID="Source" Type="F12.Payments.WebServer.Class.Group"/>
-					<Target ID="Target" Type="MWIC!Microsoft.Windows.InternetInformationServices.WebSite"/>
-				</RelationshipType>
-			</RelationshipTypes>
-			
-			
+			</ClassTypes>			
 		</EntityTypes>
 	</TypeDefinitions>
 	<Monitoring>
@@ -64,13 +54,13 @@ This fragment depends on references:
 						<MembershipRule>
 							<!-- Common Library class is abstract - this is concrete - the class we need to add to the group -->
 							<MonitoringClass>$MPElement[Name="MWI2!Microsoft.Windows.InternetInformationServices.10.0.WebSite"]$</MonitoringClass>
-							<RelationshipClass>$MPElement[Name="F12.Payments.Class.WebServerGroup.Contains.Websites"]$</RelationshipClass>
+							<RelationshipClass>$MPElement[Name="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
 							<Expression>
 								<And>
 									<Expression>
 										<SimpleExpression>
 											<ValueExpression>
-												<!--Description is a property of the abstract parent class so need to use property of that -->
+												<!--Description is a property of the abstract parent class (host) so need to use property of that -->
 												<Property>$MPElement[Name="MWIC!Microsoft.Windows.InternetInformationServices.WebSite"]/Description$</Property>
 											</ValueExpression>
 											<Operator>Equal</Operator>
