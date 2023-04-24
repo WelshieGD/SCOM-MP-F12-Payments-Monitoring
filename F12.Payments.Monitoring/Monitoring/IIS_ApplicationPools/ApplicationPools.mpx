@@ -1,0 +1,201 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+
+		<!-- 
+%%
+Description:
+  A CLASS and DISCOVERY based on existence of a registry KEY with an example class property added
+  CompanyID - is a short abbreviation for your company with NO SPACES OR SPECIAL CHARACTERS ALLOWED
+  AppName - is a short name for your app with NO SPACES OR SPECIAL CHARACTERS ALLOWED
+	
+Version: 1.0
+LastModified: 23rd April 2023
+
+%%
+
+In this fragment you need to replace:
+  ##CompanyID## F12
+  ##AppName## Payments
+  ##AppPoolName## SquaredUpv5
+  ##ServerName## SCOMMS
+  ##Alias##  MWIC
+
+RequiredManagementPacks:
+- "Microsoft.Windows.InternetInformationServices.2016.mp"
+- "Microsoft.Windows.InternetInformationServices.CommonLibrary.mp"
+
+This fragment depends on references:
+  RequiredReference: Alias="System", ID="System.Library"
+  RequiredReference: Alias="Windows", ID="Microsoft.Windows.Library"
+  RequiredReference: Alias="MSIL", ID="Microsoft.SystemCenter.InstanceGroup.Library"
+  RequiredReference: Alias="MWIC", ID="Microsoft.Windows.InternetInformationServices.CommonLibrary"
+
+
+	
+@@Author=Graham Davies@@
+-->
+		<TypeDefinitions>
+			<EntityTypes>
+				<ClassTypes>
+					<ClassType ID="F12.Payments.ApplicationPool.Class.Group" Accessibility="Public" Abstract="false" Base="MSIL!Microsoft.SystemCenter.InstanceGroup" Hosted="false" Singleton="true" Extension="false" />
+				</ClassTypes>
+			</EntityTypes>
+		</TypeDefinitions>
+		<Monitoring>
+			<Discoveries>
+				<Discovery ID="F12.Payments.ApplicationPool.Class.Group.Discovery" Enabled="true" Target="F12.Payments.ApplicationPool.Class.Group" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+					<Category>Discovery</Category>
+					<DiscoveryTypes>
+						<DiscoveryRelationship TypeID="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" />
+					</DiscoveryTypes>
+					<DataSource ID="GroupPopulationDataSource" TypeID="SC!Microsoft.SystemCenter.GroupPopulator">
+						<RuleId>$MPElement$</RuleId>
+						<GroupInstanceId>$MPElement[Name="F12.Payments.ApplicationPool.Class.Group"]$</GroupInstanceId>
+						<MembershipRules>
+							<MembershipRule>
+								<!-- Common Library class is abstract - this is concrete - the class we need to add to the group -->
+								<!-- Web Sites picks up every application pool under the web site. Consider just including Application Pools -->
+								<MonitoringClass>$MPElement[Name="MWI2!Microsoft.Windows.InternetInformationServices.10.0.ApplicationPool"]$</MonitoringClass>
+								<RelationshipClass>$MPElement[Name="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
+								<Expression>
+									<And>
+										<Expression>
+											<Or>
+												<Expression>
+													<SimpleExpression>
+														<ValueExpression>
+															<!--Description is a property of the abstract parent class (host) so need to use property of that -->
+															<Property>$MPElement[Name="MWIC!Microsoft.Windows.InternetInformationServices.ApplicationPool"]/PoolID$</Property>
+														</ValueExpression>
+														<Operator>Equal</Operator>
+														<ValueExpression>
+															<Value>SquaredUpv5</Value>
+														</ValueExpression>
+													</SimpleExpression>
+												</Expression>
+												<Expression>
+												<SimpleExpression>
+													<ValueExpression>
+														<!--Description is a property of the abstract parent class (host) so need to use property of that -->
+														<Property>$MPElement[Name="MWIC!Microsoft.Windows.InternetInformationServices.ApplicationPool"]/PoolID$</Property>
+													</ValueExpression>
+													<Operator>Equal</Operator>
+													<ValueExpression>
+														<Value>OperationsManager</Value>
+													</ValueExpression>
+												</SimpleExpression>
+												</Expression>
+											</Or>
+											</Expression>
+									     <Expression>
+											<SimpleExpression>
+												<ValueExpression>
+													<Property>$MPElement[Name="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Property>
+												</ValueExpression>
+												<Operator>Like</Operator>
+												<ValueExpression>
+													<Value>SCOMMS%</Value>
+												</ValueExpression>
+											</SimpleExpression>
+										</Expression>
+									</And> 
+								</Expression>
+							</MembershipRule>
+						</MembershipRules>
+					</DataSource>
+				</Discovery>
+			</Discoveries>
+			<Monitors>
+				<DependencyMonitor ID="F12.Payments.ApplicationPool.Class.Group.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationPool.Class.Group" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.AvailabilityState">
+					<Category>AvailabilityHealth</Category>
+					<Algorithm>WorstOf</Algorithm>
+					<MemberUnAvailable>Error</MemberUnAvailable>
+				</DependencyMonitor>
+				<DependencyMonitor ID="F12.Payments.ApplicationPool.Class.Group.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationPool.Class.Group" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.ConfigurationState">
+					<Category>ConfigurationHealth</Category>
+					<Algorithm>WorstOf</Algorithm>
+					<MemberUnAvailable>Error</MemberUnAvailable>
+				</DependencyMonitor>
+				<DependencyMonitor ID="F12.Payments.ApplicationPool.Class.Group.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationPool.Class.Group" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.PerformanceState">
+					<Category>PerformanceHealth</Category>
+					<Algorithm>WorstOf</Algorithm>
+					<MemberUnAvailable>Error</MemberUnAvailable>
+				</DependencyMonitor>
+				<DependencyMonitor ID="F12.Payments.ApplicationPool.Class.Group.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.ApplicationPool.Class.Group" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.SecurityState">
+					<Category>SecurityHealth</Category>
+					<Algorithm>WorstOf</Algorithm>
+					<MemberUnAvailable>Error</MemberUnAvailable>
+				</DependencyMonitor>
+			</Monitors>
+		</Monitoring>
+
+		<Presentation>
+			<Views>
+				<!-- Although a group is specified, only instances of the target class in the group will be displayed (or instances hosted by target) -->
+				<!-- If entity is specified as the criteria then all group members are displayed as all instances derive from entity-->
+				<View ID="F12.Payments.ApplicationPool.Alert.View" Accessibility="Internal" Enabled="true" Target="MWI2!Microsoft.Windows.InternetInformationServices.10.0.ApplicationPool" TypeID="SC!Microsoft.SystemCenter.AlertViewType" Visible="true">
+					<Category>Custom</Category>
+					<Criteria>
+						<ResolutionState>
+							<StateRange Operator="NotEquals">255</StateRange>
+						</ResolutionState>
+					</Criteria>
+					<Presentation>
+					</Presentation>
+					<Target>$MPElement[Name="F12.Payments.ApplicationPool.Class.Group"]$</Target>
+				</View>
+
+				<View ID="F12.Payments.ApplicationPool.State.View" Accessibility="Internal" Enabled="true" Target="MWI2!Microsoft.Windows.InternetInformationServices.10.0.ApplicationPool" TypeID="SC!Microsoft.SystemCenter.StateViewType" Visible="true">
+					<Category>Custom</Category>
+					<Criteria />
+
+					<Presentation>
+					</Presentation>
+					<Target>$MPElement[Name="F12.Payments.ApplicationPool.Class.Group"]$</Target>
+				</View>
+
+			</Views>
+			<Folders/>
+			<FolderItems>
+				<FolderItem ElementID="F12.Payments.ApplicationPool.Alert.View" ID="F12.Payments.ApplicationServer.Alert.View.FolderItem" Folder="F12.Payments.Root.Folder" />
+				<FolderItem ElementID="F12.Payments.ApplicationPool.State.View" ID="F12.Payments.ApplicationServer.State.View.FolderItem" Folder="F12.Payments.Root.Folder" />
+			</FolderItems>
+		</Presentation>
+
+
+		<LanguagePacks>
+			<LanguagePack ID="ENU" IsDefault="true">
+				<DisplayStrings>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.Class.Group">
+						<Name>F12 Payments Application Pool Group</Name>
+						<Description>Group of Web Sites that make up the Payments application.</Description>
+					</DisplayString>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.Class.Group.Discovery">
+						<Name>Group Populator - F12 Payments Application Pool Group</Name>
+						<Description></Description>
+					</DisplayString>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.Alert.View">
+						<Name>Active Alerts - Application Pool</Name>
+						<Description />
+					</DisplayString>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.State.View">
+						<Name>Application Pool State</Name>
+						<Description />
+					</DisplayString>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.Class.Group.Availability.Dependency.Monitor">
+						<Name>F12 Payments ApplicationPool Group Availability Dependency Monitor</Name>
+					</DisplayString>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.Class.Group.Configuration.Dependency.Monitor">
+						<Name>F12 Payments ApplicationPool Group Configuration Dependency Monitor</Name>
+					</DisplayString>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.Class.Group.Performance.Dependency.Monitor">
+						<Name>F12 Payments ApplicationPool Group Performance Dependency Monitor</Name>
+					</DisplayString>
+					<DisplayString ElementID="F12.Payments.ApplicationPool.Class.Group.Security.Dependency.Monitor">
+						<Name>F12 Payments ApplicationPool Group Security Dependency Monitor</Name>
+					</DisplayString>
+				</DisplayStrings>
+			</LanguagePack>
+		</LanguagePacks>
+
+</ManagementPackFragment>

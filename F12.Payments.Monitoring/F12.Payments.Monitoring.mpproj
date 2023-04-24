@@ -80,7 +80,10 @@
     <Compile Include="Monitoring\DistributedApplication\DA.mpx">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Monitoring\WebSites\WebSites.mpx">
+    <Compile Include="Monitoring\IIS_ApplicationPools\ApplicationPools.mpx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Monitoring\IIS_WebSites\WebSites.mpx">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -88,7 +91,15 @@
     <Folder Include="Monitoring" />
     <Folder Include="Monitoring\AppServer" />
     <Folder Include="Monitoring\DistributedApplication" />
-    <Folder Include="Monitoring\WebSites" />
+    <Folder Include="Monitoring\IIS_WebSites" />
+    <Folder Include="Monitoring\IIS_ApplicationPools" />
+    <Folder Include="Monitoring\MSSQL_SQLServer" />
+    <Folder Include="Monitoring\MSSQL_Database" />
+    <Folder Include="Monitoring\MSSQL_SQLAgent" />
+    <Folder Include="SyntheticTransactions" />
+    <Folder Include="SyntheticTransactions\PortMonitoring" />
+    <Folder Include="SyntheticTransactions\OLEDBMonitoring" />
+    <Folder Include="SyntheticTransactions\URLMonitoring" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VSAC\Microsoft.SystemCenter.OperationsManager.targets" />
 </Project>

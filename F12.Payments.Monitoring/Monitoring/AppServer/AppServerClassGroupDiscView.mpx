@@ -209,7 +209,7 @@ Values 1, 2, and 3 are used only when the PathType is set to 1.
 					<Description />
 				</DisplayString>
 				<DisplayString ElementID="F12.Payments.ApplicationServer.Alert.View">
-					<Name>Active Alerts</Name>
+					<Name>Active Alerts - Application Server</Name>
 					<Description />
 				</DisplayString>
 				<DisplayString ElementID="F12.Payments.ApplicationServer.State.View">
