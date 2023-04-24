@@ -53,6 +53,7 @@ This fragment depends on references:
 					<MembershipRules>
 						<MembershipRule>
 							<!-- Common Library class is abstract - this is concrete - the class we need to add to the group -->
+							<!-- Web Sites picks up every application pool under the web site. Consider just including Application Pools -->
 							<MonitoringClass>$MPElement[Name="MWI2!Microsoft.Windows.InternetInformationServices.10.0.WebSite"]$</MonitoringClass>
 							<RelationshipClass>$MPElement[Name="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
 							<Expression>

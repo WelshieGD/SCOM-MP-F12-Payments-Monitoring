@@ -15,25 +15,11 @@ WebServer Group = F12.Payments.Weberver.Class.Group
 			<EntityTypes>
 				<ClassTypes>
 					<!-- System.Service requires relationships. System.Group doesn't. Sadly properties of System.Service are read only (From SCSM) -->
-					<ClassType ID="F12.Payments.DA" Base="System!System.Service" Accessibility="Public" Abstract="false" Hosted="false" Singleton="true">
+					<!-- System.Service shows up under Distributed Applications and not under Groups.-->
+					<!-- Using System.Group allows scoping of views and notifications on entity and group to capture all objects -->
+					<ClassType ID="F12.Payments.DA" Base="MSIL!Microsoft.SystemCenter.InstanceGroup" Accessibility="Public" Abstract="false" Hosted="false" Singleton="true">
 					</ClassType>
 				</ClassTypes>
-				<RelationshipTypes>
-
-					<!-- In this section, provide the Source (i.e. Parent) and Target (i.e. Child)
-             for this relationship. Also, review and update the Base attribute. 
-             More information can be found in the Management Pack Development Kit: 
-             http://msdn.microsoft.com/en-us/library/ee533533.aspx -->
-					<RelationshipType ID="F12.Payments.DA.contains.Group.ApplicationServer" Base="System!System.Containment" Abstract="false" Accessibility="Internal">
-						<Source ID="Source" Type="F12.Payments.DA"/>
-						<Target ID="Target" Type="F12.Payments.ApplicationServer.Class.Group"/>
-					</RelationshipType>
-					<RelationshipType ID="F12.Payments.DA.contains.Group.WebServer" Base="System!System.Containment" Abstract="false" Accessibility="Internal">
-						<Source ID="Source" Type="F12.Payments.DA"/>
-						<Target ID="Target" Type="F12.Payments.WebServer.Class.Group"/>
-					</RelationshipType>
-
-				</RelationshipTypes>
 			</EntityTypes>
 		</TypeDefinitions>
 
@@ -50,7 +36,7 @@ WebServer Group = F12.Payments.Weberver.Class.Group
 					<MembershipRules>
 						<MembershipRule>
 							<MonitoringClass>$MPElement[Name="F12.Payments.ApplicationServer.Class.Group"]$</MonitoringClass>
-							<RelationshipClass>$MPElement[Name="F12.Payments.DA.contains.Group.ApplicationServer"]$</RelationshipClass>
+							<RelationshipClass>$MPElement[Name="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
 						</MembershipRule>
 					</MembershipRules>
 				</DataSource>
@@ -66,49 +52,49 @@ WebServer Group = F12.Payments.Weberver.Class.Group
 					<MembershipRules>
 						<MembershipRule>
 							<MonitoringClass>$MPElement[Name="F12.Payments.WebServer.Class.Group"]$</MonitoringClass>
-							<RelationshipClass>$MPElement[Name="F12.Payments.DA.contains.Group.WebServer"]$</RelationshipClass>
+							<RelationshipClass>$MPElement[Name="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
 						</MembershipRule>
 					</MembershipRules>
 				</DataSource>
 			</Discovery>
 		</Discoveries>
 		<Monitors>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.AvailabilityState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.AvailabilityState">
 			<Category>AvailabilityHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.ConfigurationState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.ConfigurationState">
 			<Category>ConfigurationHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.PerformanceState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.PerformanceState">
 			<Category>PerformanceHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.WebServer" MemberMonitor="Health!System.Health.SecurityState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.WebServer.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.SecurityState">
 			<Category>SecurityHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.AvailabilityState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Availability.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.AvailabilityState">
 			<Category>AvailabilityHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.ConfigurationState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Configuration.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.ConfigurationState">
 			<Category>ConfigurationHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.PerformanceState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Performance.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.PerformanceState">
 			<Category>PerformanceHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
 		</DependencyMonitor>
-		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="F12.Payments.DA.contains.Group.ApplicationServer" MemberMonitor="Health!System.Health.SecurityState">
+		<DependencyMonitor ID="F12.Payments.DA.Contains.Group.ApplicationServer.Security.Dependency.Monitor" Accessibility="Public" Enabled="true" Target="F12.Payments.DA" ParentMonitorID="Health!System.Health.SecurityState" Remotable="true" Priority="Normal" RelationshipType="MSIL!Microsoft.SystemCenter.InstanceGroupContainsEntities" MemberMonitor="Health!System.Health.SecurityState">
 			<Category>SecurityHealth</Category>
 			<Algorithm>WorstOf</Algorithm>
 			<MemberUnAvailable>Error</MemberUnAvailable>
@@ -125,16 +111,6 @@ WebServer Group = F12.Payments.Weberver.Class.Group
              Descriptions are also helpful when the user is doing a search in the Console. -->
 					<DisplayString ElementID="F12.Payments.DA">
 						<Name>F12 Payments Application</Name>
-						<Description></Description>
-					</DisplayString>
-
-					<DisplayString ElementID="F12.Payments.DA.contains.Group.ApplicationServer">
-						<Name>F12 Payments DA contains Application Server Component Group</Name>
-						<Description></Description>
-					</DisplayString>
-
-					<DisplayString ElementID="F12.Payments.DA.contains.Group.WebServer">
-						<Name>F12 Payments DA contains WebServer Server Component Group</Name>
 						<Description></Description>
 					</DisplayString>
 
